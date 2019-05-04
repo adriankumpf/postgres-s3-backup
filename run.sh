@@ -1,9 +1,9 @@
 #!/bin/bash -e
 
+set -o pipefail
+
 export PGHOST=${PGHOST:-$POSTGRES_PORT_5432_TCP_ADDR}
 export PGPORT=${PGPORT:-$POSTGRES_PORT_5432_TCP_PORT}
-
-# TODO make schedule configurable
 
 : ${PGHOST:?"--link or hostname to a PostgreSQL container or server is not set"}
 : ${PGPORT:?"--link or port to a PostgreSQL container or server is not set"}

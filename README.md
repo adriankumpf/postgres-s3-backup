@@ -6,6 +6,17 @@ The idea is here is to provide an easy ready-to-go way to dump an entire postgre
 > Please check the version/tag you pull of this image. If a version mismatch
 > occurs, pg_dumpall will not execute!
 
+```
+docker build -t adriankumpf/postgres-backup .
+docker run -it --network=container:postgres --env-file .env --rm --name postgres-backup adriankumpf/postgres-backup
+```
+
+To schedule to job use cron on your host – just put the following in your crontab:
+
+```crontab
+0 2 * * * docker run -itd --network=container:postgres --env-file .env --rm --name postgres-backup adriankumpf/postgres-backup
+```
+
 ##### Features:
 
 * Symmetric Encryption via gpg
