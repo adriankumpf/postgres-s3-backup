@@ -1,4 +1,4 @@
-FROM postgres:11.2
+FROM postgres:12
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive \
     apt-get install -y -q gnupg xz-utils awscli
