@@ -19,9 +19,17 @@ GPG_COMPRESSION_LEVEL=${GPG_COMPRESSION_LEVEL:-0}
 NAME_PREFIX=${NAME_PREFIX:-database-archive}
 EXTENSION=${EXTENSION:-.psql.xz.gpg}
 AWSCLI_OPTIONS=${AWSCLI_OPTIONS:---sse}
+EXCLUDED_DATABASES=${EXCLUDED_DATABASES:-}
 
-BACKUP="${NAME_PREFIX}_`date +"%Y-%m-%d_%H-%M"`${EXTENSION}"
+IFS=',' read -ra DBS <<< "$EXCLUDED_DATABASES"
+PG_EXCLUDED_DATABASES=""
+for i in "${DBS[@]}"; do
+  PG_EXCLUDED_DATABASES="$PG_EXCLUDED_DATABASES --exclude-database=${i}"
+done
+
+BACKUP="${NAME_PREFIX}_$(date +"%Y-%m-%d_%H-%M")${EXTENSION}"
 echo "Set backup file name to: $BACKUP"
 echo "Starting database backup.."
-pg_dumpall | xz -${XZ_COMPRESSION_LEVEL} -zf - | gpg --no-tty --batch --pinentry-mode loopback --command-fd 0 -c --cipher-algo ${CIPHER_ALGO} -z ${GPG_COMPRESSION_LEVEL} --passphrase "${SYMMETRIC_PASSPHRASE}" | aws s3 cp - "${BUCKET}/${BACKUP}" "${AWSCLI_OPTIONS}"
+echo "Excluded databases: $EXCLUDED_DATABASES"
+pg_dumpall ${PG_EXCLUDED_DATABASES}| xz "-${XZ_COMPRESSION_LEVEL}" -zf - | gpg --no-tty --batch --pinentry-mode loopback --command-fd 0 -c --cipher-algo "${CIPHER_ALGO}" -z "${GPG_COMPRESSION_LEVEL}" --passphrase "${SYMMETRIC_PASSPHRASE}" | aws s3 cp - "${BUCKET}/${BACKUP}" "${AWSCLI_OPTIONS}"
 echo "Backup finished!"
