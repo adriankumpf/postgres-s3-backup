@@ -1,14 +1,13 @@
-### docker-postgres-s3-archive
+# docker-postgres-s3-archive
 
 Taken from [InAnimaTe/docker-postgres-s3-archive](https://github.com/InAnimaTe/docker-postgres-s3-archive), this image has the necessary utilities for you to perform postgres backups to S3.
 
 The idea is here is to provide an easy ready-to-go way to dump an entire postgresql database, compress it, encrypt it, and push it to Amazon S3.
 
-> Please check the version/tag you pull of this image. If a version mismatch
-> occurs, pg_dumpall will not execute!
+## Usage
 
 ```
-docker build -t postgres-backup .
+docker build --build-arg POSTGRES_VERSION=15 -t postgres-backup .
 docker run -it --network=container:postgres --env-file .env --rm --name postgres-backup postgres-backup
 ```
 
@@ -18,22 +17,22 @@ To perform continues backups schedule a cron job:
 0 2 * * * docker run -itd --network=container:postgres --env-file .env --rm --name postgres-backup postgres-backup
 ```
 
-##### Features:
+## Features:
 
 - Symmetric Encryption via `gpg`
 - Compression via `xz` (lzma2)
 - Extreme configurability via environment variables :)
 
-#### Environment variables
+## Environment variables
 
-##### _Required_
+### _Required_
 
 - `AWS_ACCESS_KEY_ID` - AWS S3 access key.
 - `AWS_SECRET_ACCESS_KEY` - AWS S3 secret key.
 - `BUCKET` - AWS S3 bucket (and folder) to store the backup. i.e. `s3://herpderpbucket/folder`
 - `SYMMETRIC_PASSPHRASE` - The gpg symmetric passphrase to use to encrypt your file.
 
-##### _Optional_
+### _Optional_
 
 - `PGHOST/PGPORT` - Two variables which can be set to specify the usage of a different container or postgres server (meaning you aren't linking). (default: HOST and PORT of the container you link.)
 - `PGUSER` - The database user to connect as (default: `postgres`)
@@ -50,6 +49,6 @@ To perform continues backups schedule a cron job:
 
 > All other [aws-cli](https://github.com/aws/aws-cli) variables are also supported.
 
-#### A few notes
+## A few notes
 
 - Use spaces in your buckets, prefix, or extension _at your own risk_!

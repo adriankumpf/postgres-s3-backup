@@ -1,4 +1,5 @@
-FROM postgres:12
+ARG POSTGRES_VERSION=15
+FROM postgres:${POSTGRES_VERSION}
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive \
     apt-get install -y -q gnupg xz-utils awscli
