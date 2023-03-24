@@ -17,6 +17,12 @@ To perform continues backups schedule a cron job:
 0 2 * * * docker run -itd --network=container:postgres --env-file .env --rm --name postgres-backup postgres-backup
 ```
 
+### Restore
+
+```bash
+echo $SYMMETRIC_PASSPHRASE | gpg --batch --passphrase-fd 0 --decrypt database-archive.psql.xz.gpg | xz -d | psql -U postgres postgres
+```
+
 ## Features:
 
 - Symmetric Encryption via `gpg`
